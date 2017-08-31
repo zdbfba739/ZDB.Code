@@ -6,7 +6,6 @@ namespace ZDB.GenerateUniqueID
     {
         /// <summary>
         /// 根据GUID获取16位的唯一字符串
-        /// Author  : 付义方  
         /// </summary>
         /// <returns></returns>
         public static string GuidTo16String()
@@ -19,7 +18,6 @@ namespace ZDB.GenerateUniqueID
 
         /// <summary>
         /// 根据GUID获取19位的唯一数字序列
-        /// Author  : 付义方  
         /// </summary>
         /// <returns></returns>
         public static long GuidToLongID()
@@ -30,7 +28,6 @@ namespace ZDB.GenerateUniqueID
 
         /// <summary>
         /// 生成22位唯一的数字 并发可用
-        /// Author  : 付义方  
         /// </summary>
         /// <returns></returns>
         public static string GenerateUniqueID()
