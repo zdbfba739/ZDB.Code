@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZDB.GenerateUniqueID", "ZDB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZDB.DBRepository", "ZDB.DBRepository\ZDB.DBRepository.csproj", "{4FCD507E-7AF5-423F-B245-66D7020B9B19}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZDB.Redis", "ZDB.Redis\ZDB.Redis.csproj", "{371ADF6F-5399-4030-A84F-3FC1C276006E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4FCD507E-7AF5-423F-B245-66D7020B9B19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4FCD507E-7AF5-423F-B245-66D7020B9B19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4FCD507E-7AF5-423F-B245-66D7020B9B19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{371ADF6F-5399-4030-A84F-3FC1C276006E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{371ADF6F-5399-4030-A84F-3FC1C276006E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{371ADF6F-5399-4030-A84F-3FC1C276006E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{371ADF6F-5399-4030-A84F-3FC1C276006E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

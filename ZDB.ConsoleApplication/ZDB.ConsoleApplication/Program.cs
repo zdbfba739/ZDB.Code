@@ -32,9 +32,9 @@ namespace ZDB.ConsoleApplication
                 //File.AppendAllLines("D:\\log.txt", new List<string>() { $"加载时间：{watch.ElapsedMilliseconds}毫秒" });
                 Console.WriteLine($"加载时间：{watch.ElapsedMilliseconds}毫秒");
                 watch.Restart();
-                DbService.BeginTransaction();
+               // DbService.BeginTransaction();
                 DbService.Insert(uList);
-                DbService.CommitTransaction();
+               // DbService.CommitTransaction();
                 watch.Stop();
                 Console.WriteLine($"提交时间：{watch.ElapsedMilliseconds}毫秒");
             }
