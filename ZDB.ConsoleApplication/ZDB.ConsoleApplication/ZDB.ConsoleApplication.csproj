@@ -39,12 +39,16 @@
       <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="O2S.Components.PDFRender4NET">
+      <HintPath>..\OutRef\O2S.Components.PDFRender4NET.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SQLite, Version=1.0.105.2, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SQLite.Core.1.0.105.2\lib\net46\System.Data.SQLite.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -70,6 +74,10 @@
     <ProjectReference Include="..\ZDB.GenerateUniqueID\ZDB.GenerateUniqueID.csproj">
       <Project>{1baca4e0-74c8-48c8-895f-2bd6ba45f08f}</Project>
       <Name>ZDB.GenerateUniqueID</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ZDB.Images\ZDB.Images.csproj">
+      <Project>{3be956a5-f6a3-47ba-8033-2dfe6370d9e4}</Project>
+      <Name>ZDB.Images</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

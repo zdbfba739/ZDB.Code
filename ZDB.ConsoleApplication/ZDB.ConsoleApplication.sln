@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZDB.DBRepository", "ZDB.DBR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZDB.Redis", "ZDB.Redis\ZDB.Redis.csproj", "{371ADF6F-5399-4030-A84F-3FC1C276006E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZDB.Images", "ZDB.Images\ZDB.Images.csproj", "{3BE956A5-F6A3-47BA-8033-2DFE6370D9E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{371ADF6F-5399-4030-A84F-3FC1C276006E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{371ADF6F-5399-4030-A84F-3FC1C276006E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{371ADF6F-5399-4030-A84F-3FC1C276006E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BE956A5-F6A3-47BA-8033-2DFE6370D9E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BE956A5-F6A3-47BA-8033-2DFE6370D9E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BE956A5-F6A3-47BA-8033-2DFE6370D9E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BE956A5-F6A3-47BA-8033-2DFE6370D9E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
