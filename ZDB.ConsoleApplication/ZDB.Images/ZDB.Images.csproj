@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QRCode\QRCode.cs" />
+    <Compile Include="VerificationCode\VerificationCode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

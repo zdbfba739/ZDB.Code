@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.SQLite;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using O2S.Components.PDFRender4NET;
-using ZDB.DBRepository.DbFactory;
-using ZDB.DBRepository.Entity;
-using ZDB.DBRepository.SQLite;
+using System.Net;
 using ZDB.GenerateUniqueID;
-using ZDB.Images.QRCode;
+using ZDB.Images.VerificationCode;
 
 namespace ZDB.ConsoleApplication
 {
@@ -19,10 +10,12 @@ namespace ZDB.ConsoleApplication
     {
         static void Main(string[] args)
         {
+            #region 唯一标识
             //var uniqueID = MadeUniqueID.GenerateUniqueID();
-            //Console.WriteLine(uniqueID);
+            //Console.WriteLine(uniqueID); 
+            #endregion
 
-            #region MyRegion
+            #region 时间间隔及日志记录
 
             //try
             //{
@@ -55,6 +48,7 @@ namespace ZDB.ConsoleApplication
 
             #endregion
 
+            #region 参数化查询
             //using (var helper=new SQLiteHelper("170826000001"))
             //{
             //    var dd = helper.Query("select *from PKG_SKU_LIST",new SQLiteParameter {});
@@ -68,7 +62,10 @@ namespace ZDB.ConsoleApplication
             //{
             //    Console.WriteLine(e);
             //    throw;
-            //}
+            //} 
+            #endregion
+
+            #region 判断取数
             //var source=new List<int>
             //{
             //    1,2,3,4,5,6,7,8,9
@@ -82,8 +79,10 @@ namespace ZDB.ConsoleApplication
             //        idd = true;
             //    }
             //    return idd;
-            //}).FirstOrDefault();
+            //}).FirstOrDefault(); 
+            #endregion
 
+            #region 引用类型及组合方法
             //var dd = 11 / 12;
 
             //var ddd = new List<List<string>>
@@ -123,28 +122,106 @@ namespace ZDB.ConsoleApplication
             //    Console.WriteLine("{0},{1},{2},{3}", c1[result[0]], c2[result[1]], c3[result[2]], c4[result[3]]);
             //    return true;
             //});
-            //dd[0][0].Add("bb");
+            //dd[0][0].Add("bb"); 
+            #endregion
 
-            
-            using (var pdf = PDFFile.Open(@"C:\Users\admin\Desktop\1\11.pdf"))
-            {
-                for (var i = 1; i <= pdf.PageCount; i++)
-                {
-                    
-                    using (var pageImage = pdf.GetPageImage(i - 1, 56 * 3))
-                    {
-                        //图片的路径及名称
-                        var ImgPath = @"C:\Users\admin\Desktop\1\" + DateTime.Now.ToString("yyMMddHHmmss") + ".jpg";
+            #region PDF转图片
+            //using (var pdf = PDFFile.Open(@"C:\Users\admin\Desktop\1\11.pdf"))
+            //{
+            //    for (var i = 1; i <= pdf.PageCount; i++)
+            //    {
 
-                        //覆盖保存图片
-                        pageImage.Save(ImgPath, ImageFormat.Jpeg);
-                    }
-                }
-            }
+            //        using (var pageImage = pdf.GetPageImage(i - 1, 56 * 3))
+            //        {
+            //            //图片的路径及名称
+            //            var ImgPath = @"C:\Users\admin\Desktop\1\" + DateTime.Now.ToString("yyMMddHHmmss") + ".jpg";
+
+            //            //覆盖保存图片
+            //            pageImage.Save(ImgPath, ImageFormat.Jpeg);
+            //        }
+            //    }
+            //} 
+            #endregion
+
+            #region 线程传参及开始
+            //int i = 5;
+            //Thread thread=new Thread((obj) =>
+            //{
+            //    Console.WriteLine("i="+ obj);
+            //});
+            //thread.Start(i);
+            //i = 6; 
+
+            //new Thread(() => { MadePic(); }).Start();
+            #endregion
+
+            #region Get|Post请求处理
+            //Console.WriteLine("Starting...");
+
+            //Console.WriteLine("Making API call...");
+            //string url = "http://192.168.1.244:8045/api/v1.0/Tools/GetPluginList";
+            //HttpWebRequest request;
+
+            //request = (HttpWebRequest)WebRequest.Create(url);
+            //request.Headers.Add("Authorization", "Bearer eyJDbGFpbXMiOlt7IlR5cGUiOiJJZCIsIlZhbHVlIjoiMTEyMjEzIn0seyJUeXBlIjoiY29tcElkIiwiVmFsdWUiOiIxMSJ9XSwiRXhwaXJlc1V0YyI6IjIwMTgtMDktMTlUMDc6MzM6NTErMDA6MDAifQ==");
+            //GetResponse(request);
+
+            //Console.WriteLine("Test 2");
+            //request = (HttpWebRequest)WebRequest.Create(url);
+            //request.ContentType = "application/json; charset=utf-8";
+            //GetResponse(request);
+
+            //Console.WriteLine("Test 3");
+            //request = (HttpWebRequest)WebRequest.Create(url);
+            //request.Method = "POST";
+            //GetResponse(request);
+
+            //Console.WriteLine("Test 4");
+            //request = (HttpWebRequest)WebRequest.Create(url);
+            //request.ContentType = "application/json; charset=utf-8";
+            //request.Method = "POST";
+            //GetResponse(request);
+
+            //Console.WriteLine("Done!"); 
+            #endregion
+
+            Console.ReadKey();
+
             Console.Read();
         }
 
+        public static void GetResponse(HttpWebRequest request)
+        {
+            try
+            {
+                using (var response = (HttpWebResponse)request.GetResponse())
+                {
+                    var stream = response.GetResponseStream();
+                    var reader = new StreamReader(stream);
+                    var result = reader.ReadToEnd();
+                    Console.WriteLine(result);
+                    reader.Close();
+                    reader.Dispose();
+                    response.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("*** Failed: Error '" + e.Message + "'.");
+            }
+        }
+
+        public static void MadePic()
+        {
+            for (int i = 0; i < 7000; i++)
+            {
+                var dd = VerificationCode.ImageValid(VerificationCode.ResetValidCode());
+                dd.Save(@"C:\Users\admin\Desktop\2\" + MadeUniqueID.GenerateUniqueID() + ".jpg");
+            }
+        }
+
         public delegate bool SetAlgorithmCallback(int[] result, int length);
+
         static bool CartesianProduct(int[] sets, int i, int[] result, SetAlgorithmCallback callback)
         {
             for (var j = 0; j < sets[i]; ++j)
@@ -163,6 +240,7 @@ namespace ZDB.ConsoleApplication
             }
             return true;
         }
+
         /// <summary>
         /// 求集合笛卡尔积
         /// </summary>
@@ -173,5 +251,6 @@ namespace ZDB.ConsoleApplication
             int[] result = new int[sets.Length];
             CartesianProduct(sets, 0, result, callback);
         }
+
     }
 }
