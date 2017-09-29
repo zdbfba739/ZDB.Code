@@ -1,8 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
+using System.Security.Policy;
+using Newtonsoft.Json;
 using ZDB.GenerateUniqueID;
+using ZDB.Images.QRCode;
 using ZDB.Images.VerificationCode;
+using System.Web.Script.Serialization;
+using ZDB.DBRepository.DbFactory;
 
 namespace ZDB.ConsoleApplication
 {
@@ -184,6 +191,24 @@ namespace ZDB.ConsoleApplication
 
             //Console.WriteLine("Done!"); 
             #endregion
+
+            #region 二维码处理
+            //for (int i = 0; i < 100; i++)
+            //{
+            //    var dd = QRCode.EnCoder("12345");
+            //    dd.Save(@"C:\Users\admin\Desktop\3\" + MadeUniqueID.GenerateUniqueID() + ".jpg");
+            //}
+            //Console.WriteLine(QRCode.DeCoder(@"C:\Users\admin\Desktop\3\2017092009124492392214.jpg")); 
+            #endregion
+
+            #region 未知json转实体
+            //var dd = DbService.GetList<dynamic>("select * from userinfo LIMIT 10").FirstOrDefault();
+            ////基础数据
+            //Dictionary<string, string> basisValues = new JavaScriptSerializer().Deserialize<Dictionary<string, string>>(JsonConvert.SerializeObject(dd)); 
+            #endregion
+
+
+
 
             Console.ReadKey();
 
