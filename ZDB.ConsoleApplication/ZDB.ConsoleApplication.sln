@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZDB.Images", "ZDB.Images\ZD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZDB.GetUrlDb", "ZDB.GetUrlDb\ZDB.GetUrlDb.csproj", "{0ACD960D-3285-4AAF-B54C-9D9F7F5DC013}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Md.CommonXls", "Md.CommonXls\Md.CommonXls.csproj", "{D423FE97-5E85-4D5D-8D08-F78861734ED2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZDB.QuartzW", "ZDB.QuartzW\ZDB.QuartzW.csproj", "{75C352A7-C604-463B-A5C8-AD7137E95398}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{0ACD960D-3285-4AAF-B54C-9D9F7F5DC013}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0ACD960D-3285-4AAF-B54C-9D9F7F5DC013}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0ACD960D-3285-4AAF-B54C-9D9F7F5DC013}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D423FE97-5E85-4D5D-8D08-F78861734ED2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D423FE97-5E85-4D5D-8D08-F78861734ED2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D423FE97-5E85-4D5D-8D08-F78861734ED2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D423FE97-5E85-4D5D-8D08-F78861734ED2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75C352A7-C604-463B-A5C8-AD7137E95398}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75C352A7-C604-463B-A5C8-AD7137E95398}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75C352A7-C604-463B-A5C8-AD7137E95398}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75C352A7-C604-463B-A5C8-AD7137E95398}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

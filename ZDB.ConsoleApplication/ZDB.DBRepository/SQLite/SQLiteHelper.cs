@@ -15,9 +15,15 @@ namespace ZDB.DBRepository.SQLite
 
         public string ProdID { get; private set; }
 
+        /// <summary>
+        /// 数据库连接
+        /// </summary>
         private SQLiteConnection _Conn;
 
-        private SQLiteTransaction _transaction;
+        /// <summary>
+        /// 事物
+        /// </summary>
+        private SQLiteTransaction _Transaction;
 
         /// <summary>
         /// 初始化帮助类
@@ -55,77 +61,23 @@ namespace ZDB.DBRepository.SQLite
             _Conn = new SQLiteConnection(ConnectionString);
         }
 
-        /// <summary>
-        /// 打开数据库链接
-        /// </summary>
-        /// <param name="isModelData"></param>
-        /// <returns></returns>
-        public bool OpenDataBase(bool isModelData = false)
-        {
-            try
-            {
-                if (_isModelData == isModelData) return true;
-
-                _isModelData = isModelData;
-                _Conn.Close();
-                var password = "sjb@v3sQl";
-                var dbfile = @"D:\Web\Md.Api.Down\pkg\17\0826\170826000001" + "\\db\\ProdSku.db";
-                ConnectionString =
-                    $@"Data Source={dbfile};Initial Catalog=sqlite;Integrated Security=True;Password={password};Max Pool Size=100;";
-
-                if (_Conn?.State == ConnectionState.Open)
-                    _Conn.Close();
-                _Conn?.Dispose();
-
-                if (!File.Exists(dbfile))
-                {
-                    _Conn = new SQLiteConnection(ConnectionString).OpenAndReturn();
-                    _Conn.ChangePassword(password);
-                }
-                else
-                {
-                    _Conn = new SQLiteConnection(ConnectionString);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-
-            return true;
-
-        }
-
-        /// <summary>
-        /// 创建产品选型数据文件
-        /// </summary>
-        /// <param name="dbfile">数据文件路径</param>
-        public void CreateSelectionDbFile(string dbfile)
-        {
-            //数据库文件不存在
-            if (!File.Exists(dbfile))
-            {
-                SQLiteConnection.CreateFile(dbfile);
-            }
-        }
-
-
-
         public void BeginTran()
         {
-            if (_transaction == null)
+            //连接处于关闭状态打开
+            if(_Conn?.State== ConnectionState.Closed)
+                _Conn.Open();
+            if (_Transaction == null)
                 _Conn.BeginTransaction();
         }
 
         public void Commit()
         {
-            _transaction?.Commit();
+            _Transaction?.Commit();
         }
 
         public void Rollback()
         {
-            _transaction?.Rollback();
+            _Transaction?.Rollback();
         }
 
         #region 执行SQL语句
@@ -135,49 +87,16 @@ namespace ZDB.DBRepository.SQLite
         /// </summary>
         public int Execute(string sql)
         {
-            return Execute(_Conn, sql, null);
+            return Execute(sql, null);
         }
-
         /// <summary>
-        /// 执行带参数的SQL语句
+        /// 执行指定连接的数据库操作
         /// </summary>
         public int Execute(string sql, params SQLiteParameter[] parameters)
         {
-            return Execute(_Conn, sql, parameters);
-        }
-
-        /// <summary>
-        /// 用另外一个连接执行SQL语句
-        /// </summary>
-        public int Execute(string connectionString, string sql)
-        {
-            return Execute(_Conn, sql, null);
-        }
-
-        /// <summary>
-        /// 用另外一个连接执行带参数的SQL语句
-        /// </summary>
-        public int Execute(string connectionString, string sql, params SQLiteParameter[] parameters)
-        {
-            return Execute(_Conn, sql, parameters);
-        }
-
-        /// <summary>
-        /// 执行指定连接的数据库操作
-        /// </summary>
-        public int Execute(SQLiteConnection conn, string sql)
-        {
-            return Execute(conn, sql, null);
-        }
-
-        /// <summary>
-        /// 执行指定连接的数据库操作
-        /// </summary>
-        public int Execute(SQLiteConnection conn, string sql, params SQLiteParameter[] parameters)
-        {
             using (SQLiteCommand cmd = new SQLiteCommand())
             {
-                PrepareCommand(cmd, null, conn, sql, parameters);
+                PrepareCommand(cmd,sql, parameters);
                 int result = cmd.ExecuteNonQuery();
                 cmd.Parameters.Clear();
                 return result;
@@ -192,39 +111,17 @@ namespace ZDB.DBRepository.SQLite
         /// </summary>
         public DataTable Query(string sql)
         {
-            return Query(_Conn, sql, null);
+            return Query(sql, null);
         }
-
-        /// 通过带参数的SQL语句返回数据集
+        
+        /// <summary>
+        /// 用其他连接获取带参数的SQL数据集合
+        /// </summary>
         public DataTable Query(string sql, params SQLiteParameter[] parameters)
-        {
-            return Query(_Conn, sql, parameters);
-        }
-
-        /// <summary>
-        /// 用其他连接获取SQL数据集合
-        /// </summary>
-        public DataTable Query(string connectionString, string sql)
-        {
-            return Query(_Conn, sql, null);
-        }
-
-        /// <summary>
-        /// 用其他连接获取带参数的SQL数据集合
-        /// </summary>
-        public DataTable Query(string connectionString, string sql, params SQLiteParameter[] parameters)
-        {
-            return Query(_Conn, sql, parameters);
-        }
-
-        /// <summary>
-        /// 用其他连接获取带参数的SQL数据集合
-        /// </summary>
-        public DataTable Query(SQLiteConnection conn, string sql, params SQLiteParameter[] parameters)
         {
             using (SQLiteCommand cmd = new SQLiteCommand())
             {
-                PrepareCommand(cmd, null, conn, sql, parameters);
+                PrepareCommand(cmd,sql, parameters);
                 using (SQLiteDataAdapter da = new SQLiteDataAdapter(cmd))
                 {
                     DataSet ds = new DataSet();
@@ -246,62 +143,21 @@ namespace ZDB.DBRepository.SQLite
 
         #region 获取数据的第一行第一列
 
-
         /// <summary>
         /// 通过SQL语句返回第一行第一列
         /// </summary>
-        public object Single(string sql)
+        public object Single( string sql)
         {
-            using (SQLiteConnection conn = new SQLiteConnection(ConnectionString))
-            {
-                return Single(conn, sql, null);
-            }
+            return Single(sql, null);
         }
         /// <summary>
         /// 通过带参数的SQL语句返回第一行第一列
         /// </summary>
-        public object Single(string sql, params SQLiteParameter[] parameters)
-        {
-            using (SQLiteConnection conn = new SQLiteConnection(ConnectionString))
-            {
-                return Single(conn, sql, parameters);
-            }
-        }
-        /// <summary>
-        /// 通过SQL语句返回第一行第一列
-        /// </summary>
-        public object Single(string connectionString, string sql)
-        {
-            using (SQLiteConnection conn = new SQLiteConnection(connectionString))
-            {
-                return Single(conn, sql, null);
-            }
-        }
-        /// <summary>
-        /// 通过带参数的SQL语句返回第一行第一列
-        /// </summary>
-        public object Single(string connectionString, string sql, params SQLiteParameter[] parameters)
-        {
-            using (SQLiteConnection conn = new SQLiteConnection(connectionString))
-            {
-                return Single(conn, sql, parameters);
-            }
-        }
-        /// <summary>
-        /// 通过SQL语句返回第一行第一列
-        /// </summary>
-        public object Single(SQLiteConnection conn, string sql)
-        {
-            return Single(conn, sql, null);
-        }
-        /// <summary>
-        /// 通过带参数的SQL语句返回第一行第一列
-        /// </summary>
-        public object Single(SQLiteConnection conn, string sql, params SQLiteParameter[] parameters)
+        public object Single( string sql, params SQLiteParameter[] parameters)
         {
             using (SQLiteCommand cmd = new SQLiteCommand())
             {
-                PrepareCommand(cmd, null, conn, sql, parameters);
+                PrepareCommand(cmd, sql, parameters);
                 object obj = cmd.ExecuteScalar();
                 cmd.Parameters.Clear();
 
@@ -320,14 +176,14 @@ namespace ZDB.DBRepository.SQLite
         /// <param name="conn"></param>
         /// <param name="sql"></param>
         /// <param name="parameters"></param>
-        void PrepareCommand(SQLiteCommand cmd, SQLiteTransaction trans, SQLiteConnection conn, string sql, SQLiteParameter[] parameters)
+        void PrepareCommand(SQLiteCommand cmd,string sql, SQLiteParameter[] parameters)
         {
-            if (conn.State != ConnectionState.Open)
-                conn.Open();
-            cmd.Connection = conn;
+            if (_Conn.State != ConnectionState.Open)
+                _Conn.Open();
+            cmd.Connection = _Conn;
             cmd.CommandText = sql;
-            if (trans != null)
-                cmd.Transaction = trans;
+            if (_Transaction != null)
+                cmd.Transaction = _Transaction;
             cmd.CommandType = CommandType.Text;
             if (parameters != null)
             {
@@ -402,7 +258,7 @@ namespace ZDB.DBRepository.SQLite
             if (_Conn?.State == ConnectionState.Open)
                 _Conn.Close();
 
-            _transaction?.Dispose();
+            _Transaction?.Dispose();
 
             _Conn?.Dispose();
         }
