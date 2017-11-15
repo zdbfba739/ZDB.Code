@@ -5,12 +5,19 @@
 #define DebugAndTrace
 #endif
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
 using System.Diagnostics;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Policy;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using ZDB.GenerateUniqueID;
 using ZDB.Images.QRCode;
@@ -224,6 +231,7 @@ namespace ZDB.ConsoleApplication
             //    var dd = QRCode.EnCoder("12345");
             //    dd.Save(@"C:\Users\admin\Desktop\3\" + MadeUniqueID.GenerateUniqueID() + ".jpg");
             //}
+            QRCode.ToFile(@"C:\Users\admin\Desktop\3\", @"C:\Users\admin\Desktop\31pack.zip", QRCode.PackingScope.All);
             //Console.WriteLine(QRCode.DeCoder(@"C:\Users\admin\Desktop\3\2017092009124492392214.jpg")); 
 
             #endregion
@@ -371,22 +379,100 @@ namespace ZDB.ConsoleApplication
 
             #endregion
 
-#if Dragon
-            Console.WriteLine("Dragon is defined");
-#else
-            Console.WriteLine("Dragon is not defined");
-#endif
+            #region 条件编译
 
-            Print0();
-            Print1();
-            Print2();
-            Print3();
+            //#if Dragon
+            //            Console.WriteLine("Dragon is defined");
+            //#else
+            //            Console.WriteLine("Dragon is not defined");
+            //#endif
+
+            //            Print0();
+            //            Print1();
+            //            Print2();
+            //            Print3(); 
+
+            #endregion
+
+            #region Json格式化
+
+            //string json = "[{\"name\":\"zhang3\"},{\"name\":\"zhang4\"}]";
+
+            //var j = new JsonParser().FromJson(json);
+            ////j是个 object[]
+            //int len = j.Length;
+            //var obj1 = j[0];
+            //var name = j[1].name; 
+
+            #endregion
+
+            #region ToDictionary
+
+            //var CustomObject = new List<dynamic>
+            //{
+            //    new
+            //    {
+            //        Name = "aaa",
+            //        Code = 1
+            //    },
+            //    new
+            //    {
+            //        Name = "aaa",
+            //        Code = 2
+            //    },
+            //    new
+            //    {
+            //        Name = "bbb",
+            //        Code = 1
+            //    }
+            //};
+            //var dic = CustomObject.GroupBy(o => o.Name)
+            //    .ToDictionary(g => g.Key, g => g.ToList()); 
+
+            #endregion
+
+            //Parallel.For(0, 10, (i) =>
+            //{
+            //    while (true)
+            //    {
+            //        var webRequest = (HttpWebRequest)WebRequest.CreateHttp("http://www.cnblogs.com/modestmt/p/7724821.html");
+            //        var response = webRequest.GetResponse();
+            //        response.Dispose();
+            //        Console.WriteLine($"Process: {i}.");
+            //        Thread.Sleep(500000);
+            //    }
+            //});
+
+            //DataTable dt = new DataTable();
+            //dt.TableName = "user";
+            //dt.Columns.Add("id", typeof(int));
+            //dt.Columns.Add("name", typeof(string));
+            //for (int i = 1; i < 11; i++)
+            //{
+            //    DataRow dr = dt.NewRow();
+            //    dr["id"] = i;
+            //    dr["name"] = "name" + i;
+            //    dt.Rows.Add(dr);
+            //}
+            //var aa = dt.AsDataView();
+            //var dd = dt.AsEnumerable().Where(x => x.Field<int>("id") > 5).AsDataView();
+
+            //object i = 1;
+            //var a = i as int?;
+            //var b = i is int;
+            //var c = i as string;
+
+            //Console.WriteLine(DateTime.Now.ToString("yyyy年MM月dd日HH时mm分"));
+            //Console.WriteLine(DateTime.Now.ToString("yyyy年mm月dd日hh时mm分"));
+
             Console.ReadKey();
 
             Console.Read();
         }
 
-        [Conditional("DEBUG")]
+
+        #region 条件编译
+        [Conditional("Debug")]
         static void Print0()
         {
             Console.WriteLine("DEBUG is defined");
@@ -412,7 +498,8 @@ namespace ZDB.ConsoleApplication
         static void Print3()
         {
             Console.WriteLine("Debug and Trace is defined");
-        }
+        } 
+        #endregion
 
         #region MyRegion
 
@@ -533,5 +620,82 @@ namespace ZDB.ConsoleApplication
         }
 
         #endregion
+
+        /// <summary>
+        /// json转换
+        /// </summary>
+        public class JsonParser
+        {
+
+            /// <summary>
+            /// 从json字符串到对象。
+            /// </summary>
+            /// <param name="jsonStr"></param>
+            /// <returns></returns>
+            public dynamic FromJson(string jsonStr)
+            {
+                JavaScriptSerializer jss = new JavaScriptSerializer();
+                jss.RegisterConverters(new JavaScriptConverter[] { new DynamicJsonConverter() });
+
+                dynamic glossaryEntry = jss.Deserialize(jsonStr, typeof(object)) as dynamic;
+                return glossaryEntry;
+            }
+        }
+
+        public class DynamicJsonConverter : JavaScriptConverter
+        {
+            public override object Deserialize(IDictionary<string, object> dictionary, Type type, JavaScriptSerializer serializer)
+            {
+                if (dictionary == null)
+                    throw new ArgumentNullException("dictionary");
+
+                if (type == typeof(object))
+                {
+                    return new DynamicJsonObject(dictionary);
+                }
+
+                return null;
+            }
+
+            public override IDictionary<string, object> Serialize(object obj, JavaScriptSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override IEnumerable<Type> SupportedTypes
+            {
+                get { return new ReadOnlyCollection<Type>(new List<Type>(new Type[] { typeof(object) })); }
+            }
+        }
+
+        public class DynamicJsonObject : DynamicObject
+        {
+            private IDictionary<string, object> Dictionary { get; set; }
+
+            public DynamicJsonObject(IDictionary<string, object> dictionary)
+            {
+                this.Dictionary = dictionary;
+            }
+
+            public override bool TryGetMember(GetMemberBinder binder, out object result)
+            {
+                result = this.Dictionary[binder.Name];
+
+                if (result is IDictionary<string, object>)
+                {
+                    result = new DynamicJsonObject(result as IDictionary<string, object>);
+                }
+                else if (result is ArrayList && (result as ArrayList) is IDictionary<string, object>)
+                {
+                    result = new List<DynamicJsonObject>((result as ArrayList).ToArray().Select(x => new DynamicJsonObject(x as IDictionary<string, object>)));
+                }
+                else if (result is ArrayList)
+                {
+                    result = new List<object>((result as ArrayList).ToArray());
+                }
+
+                return this.Dictionary.ContainsKey(binder.Name);
+            }
+        }
     }
 }
