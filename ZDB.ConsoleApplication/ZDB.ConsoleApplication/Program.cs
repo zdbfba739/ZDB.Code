@@ -14,20 +14,11 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Security.Policy;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using ZDB.GenerateUniqueID;
-using ZDB.Images.QRCode;
 using ZDB.Images.VerificationCode;
 using System.Web.Script.Serialization;
-using Md.CommonXls;
-using NPOI.HSSF.UserModel;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
-using ZDB.DBRepository.DbFactory;
 
 namespace ZDB.ConsoleApplication
 {
@@ -231,7 +222,7 @@ namespace ZDB.ConsoleApplication
             //    var dd = QRCode.EnCoder("12345");
             //    dd.Save(@"C:\Users\admin\Desktop\3\" + MadeUniqueID.GenerateUniqueID() + ".jpg");
             //}
-            QRCode.ToFile(@"C:\Users\admin\Desktop\3\", @"C:\Users\admin\Desktop\31pack.zip", QRCode.PackingScope.All);
+            //QRCode.ToFile(@"C:\Users\admin\Desktop\3\", @"C:\Users\admin\Desktop\31pack.zip", QRCode.PackingScope.All);
             //Console.WriteLine(QRCode.DeCoder(@"C:\Users\admin\Desktop\3\2017092009124492392214.jpg")); 
 
             #endregion
@@ -431,6 +422,7 @@ namespace ZDB.ConsoleApplication
 
             #endregion
 
+            #region DataTable操作及is as
             //Parallel.For(0, 10, (i) =>
             //{
             //    while (true)
@@ -463,9 +455,70 @@ namespace ZDB.ConsoleApplication
             //var c = i as string;
 
             //Console.WriteLine(DateTime.Now.ToString("yyyy年MM月dd日HH时mm分"));
-            //Console.WriteLine(DateTime.Now.ToString("yyyy年mm月dd日hh时mm分"));
+            //Console.WriteLine(DateTime.Now.ToString("yyyy年mm月dd日hh时mm分")); 
+            #endregion
 
-            Console.ReadKey();
+            #region 自定义属性
+            //获取MethodToRun类的静态方法集合
+            //MethodInfo[] methods = typeof(MethodToRun).GetMethods(BindingFlags.Public | BindingFlags.Static);
+            //foreach (var method in methods)
+            //{
+            //    MethodInfo info = method;
+            //    //获取每个方法上的Attributes集合
+            //    var attributes = info.GetCustomAttributes(typeof(Attribute), false);
+
+            //    foreach (var attri in attributes)
+            //    {
+            //        //如果自定义的标签是指定的标签则符合条件
+            //        if (attri is ExcuteAttribute)
+            //        {
+            //            ExcuteAttribute exe = attri as ExcuteAttribute;
+            //            //执行Flag为1的方法
+            //            if (exe.Flag == 1)
+            //            {
+            //                //info.Invoke(null, null);
+            //            }
+            //        }
+            //        if (attri is CustomFilterAttribute)
+            //        {
+            //            CustomFilterAttribute cust = attri as CustomFilterAttribute;
+            //            cust.OnBeforeAction();
+            //            info.Invoke(null, null);
+            //            cust.OnAfterAction();
+            //        }
+            //    }
+            //} 
+            #endregion
+
+            //var cancelTokenSource = new CancellationTokenSource(10000);
+
+            //Task.Factory.StartNew(() =>
+            //{
+            //    while (!cancelTokenSource.IsCancellationRequested)
+            //    {
+            //        Console.WriteLine(DateTime.Now);
+            //        Thread.Sleep(1000);
+            //    }
+            //}, cancelTokenSource.Token);
+
+            //Console.WriteLine("Press any key to cancel");
+            ////Console.ReadLine();
+            //cancelTokenSource.CancelAfter(20000);
+            //Console.WriteLine("Done");
+
+            Task<int> task = Task.Run(() => Enumerable.Range(1, 5000000).Count(n => (n % 3) == 0));
+
+            var awaiter = task.GetAwaiter();
+            awaiter.OnCompleted(() =>
+            {
+                int result = awaiter.GetResult();
+                Console.WriteLine("整除3的个数有：" + result);
+                Console.WriteLine("Task执行中...");
+                Console.ReadLine();
+            });
+
+
+            Console.ReadLine();
 
             Console.Read();
         }
@@ -498,7 +551,7 @@ namespace ZDB.ConsoleApplication
         static void Print3()
         {
             Console.WriteLine("Debug and Trace is defined");
-        } 
+        }
         #endregion
 
         #region MyRegion
@@ -561,7 +614,7 @@ namespace ZDB.ConsoleApplication
         {
             try
             {
-                using (var response = (HttpWebResponse) request.GetResponse())
+                using (var response = (HttpWebResponse)request.GetResponse())
                 {
                     var stream = response.GetResponseStream();
                     var reader = new StreamReader(stream);

@@ -1,0 +1,8 @@
+#print(ord('A'))
+#print(ord('中'))
+#print(chr(66))
+#print(chr(25991))
+print("{} {}".format("hello","world"))
+print("{0} {1}".format("hello","world"))
+print("{1} {0} {1}".format("hello","world"))
+print("网站名：{name}地址{url}".format(name="菜鸟网络",url="www.runoob.com"))
