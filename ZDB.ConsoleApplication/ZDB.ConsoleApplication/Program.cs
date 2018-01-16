@@ -14,22 +14,38 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using ZDB.GenerateUniqueID;
 using ZDB.Images.VerificationCode;
 using System.Web.Script.Serialization;
+using NPOI.XWPF.UserModel;
+using ZDB.DBRepository.DbFactory;
+using ZDB.DBRepository.Entity;
+using ZDB.Images.ZoomPic;
 
 namespace ZDB.ConsoleApplication
 {
     class Program
     {
+
+        //private static Queue m_inputQueue = new Queue();
+        private static System.Timers.Timer timer = null;
+
+        /// <summary>
+        /// 信号量
+        /// </summary>
+        static Semaphore sema = new Semaphore(5, 5);
+        const int cycleNum = 20;
         static void Main(string[] args)
         {
             #region 唯一标识
 
             //var uniqueID = MadeUniqueID.GenerateUniqueID();
-            //Console.WriteLine(uniqueID); 
+            //Console.WriteLine(uniqueID);
 
             #endregion
 
@@ -490,6 +506,7 @@ namespace ZDB.ConsoleApplication
             //} 
             #endregion
 
+            #region 线程
             //var cancelTokenSource = new CancellationTokenSource(10000);
 
             //Task.Factory.StartNew(() =>
@@ -506,21 +523,356 @@ namespace ZDB.ConsoleApplication
             //cancelTokenSource.CancelAfter(20000);
             //Console.WriteLine("Done");
 
-            Task<int> task = Task.Run(() => Enumerable.Range(1, 5000000).Count(n => (n % 3) == 0));
+            //Task<int> task = Task.Run(() => Enumerable.Range(1, 5000000).Count(n => (n % 3) == 0));
 
-            var awaiter = task.GetAwaiter();
-            awaiter.OnCompleted(() =>
+            //var awaiter = task.GetAwaiter();
+            //awaiter.OnCompleted(() =>
+            //{
+            //    int result = awaiter.GetResult();
+            //    Console.WriteLine("整除3的个数有：" + result);
+            //    Console.WriteLine("Task执行中...");
+            //    Console.ReadLine();
+            //});
+            //var fileInfo = new FileInfo(@"C:\Users\admin\Desktop\123.jpg");
+            //fileInfo.DirectoryName
+
+            //ZoomPic.ZoomPicture(@"C:\Users\admin\Desktop\123.jpg",100,200); 
+            #endregion
+
+            #region NPOI WORD
+            //XWPFDocument doc = new XWPFDocument();
+            //XWPFParagraph p0 = doc.CreateParagraph();
+            //p0.Alignment = ParagraphAlignment.LEFT;
+            //XWPFRun r0 = p0.CreateRun();
+            //r0.FontFamily = "宋体";
+            //r0.FontSize = 18;
+            //r0.IsBold = true;
+            //r0.SetText("未登录过学生的账号密码");
+
+            //XWPFParagraph p1 = doc.CreateParagraph();
+            //p1.Alignment = ParagraphAlignment.LEFT;
+            //XWPFRun r1 = p1.CreateRun();
+            //r1.FontFamily = "宋体";
+            //r1.FontSize = 10;
+            //r1.IsBold = true;
+            //r1.SetText("(备注：已登录过的学生密码不显示)");
+
+            //XWPFParagraph p2 = doc.CreateParagraph();
+            //p2.Alignment = ParagraphAlignment.LEFT;
+            //XWPFRun r2 = p2.CreateRun();
+            //r2.FontFamily = "宋体";
+            //r2.FontSize = 10;
+            //r2.IsBold = true;
+            //r2.SetText("学校：XX一中");
+
+            //XWPFParagraph p3 = doc.CreateParagraph();
+            //p3.Alignment = ParagraphAlignment.LEFT;
+            //XWPFRun r3 = p3.CreateRun();
+            //r3.FontFamily = "宋体";
+            //r3.FontSize = 10;
+            //r3.IsBold = true;
+            //r3.SetText("班级：(7)");
+
+            //XWPFParagraph p4 = doc.CreateParagraph();
+            //p4.Alignment = ParagraphAlignment.LEFT;
+            //XWPFRun r4 = p4.CreateRun();
+            //r4.FontFamily = "宋体";
+            //r4.FontSize = 10;
+            //r4.IsBold = true;
+            //r4.SetText("班主任：ddd");
+
+
+            //XWPFParagraph p5 = doc.CreateParagraph();
+            //p5.Alignment = ParagraphAlignment.LEFT;
+            //XWPFRun r5 = p5.CreateRun();
+            //r5.FontFamily = "宋体";
+            //r5.FontSize = 10;
+            //r5.IsBold = true;
+            //r5.SetText("可以在此处添加备注：");
+            //XWPFTable table = doc.CreateTable(4, 4);
+            //table.SetColumnWidth(0,5*256);
+            //table.SetColumnWidth(0, 10 * 256);
+            //table.SetColumnWidth(0, 15 * 256);
+            //table.SetColumnWidth(0, 20 * 256);
+            //for (int i = 0; i < table.Rows.Count; i++)
+            //{
+            //    XWPFParagraph pIO = table.GetRow(i).GetCell(0).AddParagraph();
+            //    XWPFRun rIO = pIO.CreateRun();
+            //    rIO.FontFamily = "微软雅黑";
+            //    rIO.FontSize = 12;
+            //    rIO.IsBold = true;
+            //    rIO.SetText(i.ToString());
+
+
+            //    XWPFParagraph pINo = table.GetRow(i).GetCell(1).AddParagraph();
+            //    XWPFRun rINo = pINo.CreateRun();
+            //    rINo.FontFamily = "微软雅黑";
+            //    rINo.FontSize = 12;
+            //    rINo.IsBold = true;
+            //    rINo.SetText("name" + i);
+
+
+            //    XWPFParagraph pIMm = table.GetRow(i).GetCell(2).AddParagraph();
+            //    XWPFRun rIMm = pIMm.CreateRun();
+            //    rIMm.FontFamily = "微软雅黑";
+            //    rIMm.FontSize = 12;
+            //    rIMm.IsBold = true;
+            //    rIMm.SetText("PassWord" + i);
+
+
+            //    XWPFParagraph pIName = table.GetRow(i).GetCell(3).AddParagraph();
+            //    XWPFRun rIName = pIName.CreateRun();
+            //    rIName.FontFamily = "微软雅黑";
+            //    rIName.FontSize = 12;
+            //    rIName.IsBold = true;
+            //    rIName.SetText("StudentName" + i);
+            //}
+            //var id = Guid.NewGuid().ToString("N");
+            //var file = File.Create(@"C:\Users\admin\Desktop\xf\" + id + ".docx");
+            //doc.Write(file);
+
+            //var paramList = new Dictionary<string, string>();
+            //paramList.Add("aa","");
+            //if (paramList.ContainsKey("aa"))
+            //{
+            //    paramList["aa"] = "1";
+            //}
+
+            // new NPOIWord().CreateWord(); 
+            #endregion
+
+            #region 线程锁
+            //Thread[] threads = new Thread[10];
+            //Account acc = new Account(1000);
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    Thread t = new Thread(new ThreadStart(acc.DoTransactions));
+            //    threads[i] = t;
+            //}
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    threads[i].Start();
+            //}
+
+            ////block main thread until all other threads have ran to completion.
+            //foreach (var t in threads)
+            //    t.Join(); 
+            #endregion
+
+            //var spath = "E:";
+            //for (int i = 1; i <= 30; i++)
+            //{
+            //    spath += "\\" + i;
+            //}
+            //var dir = new DirectoryInfo(spath);
+            //if (!dir.Exists)
+            //{
+            //    dir.Create();
+            //}
+            // string[] array = new string[] { "2", "3", "10" };
+            // var dd = array.ToArray().ToList();
+
+            //var cc= dd.Select((x, y) => x + y);
+            //MakeRequest();
+
+            //timer = new System.Timers.Timer(1 * 6 * 1000);
+            //timer.Elapsed += Timer_Elapsed;
+            //timer.Start();
+
+            //int i, j, k;
+            //for (i = 1; i < 5; i++)
+            //    for (j = 1; j < 5; j++)
+            //        for (k = 1; k < 5; k++)
+            //        {
+            //            if (i != k && i != j && j != k)
+            //                Console.WriteLine(i + "," + j + "," + k);
+            //        }
+
+            //Program sample = new Program();
+
+            //for (int i = 0; i < 30; i++)
+            //    sample.AddElement(i);
+            //sample.PrintAllElements();
+            //sample.DeleteElement(0);
+            //sample.DeleteElement(10);
+            //sample.DeleteElement(20);
+            //sample.PrintAllElements();
+
+
+            for (int i = 0; i < cycleNum; i++)
             {
-                int result = awaiter.GetResult();
-                Console.WriteLine("整除3的个数有：" + result);
-                Console.WriteLine("Task执行中...");
-                Console.ReadLine();
-            });
+                Thread td = new Thread(new ParameterizedThreadStart(testFun));
+                td.Name = string.Format("编号{0}", i.ToString());
+                td.Start(td.Name);
+            }
+            Console.ReadKey();
 
 
-            Console.ReadLine();
+            Console.ReadKey();
+            //Console.WriteLine("ok");
+            //Console.ReadLine();
 
-            Console.Read();
+            //Console.Read();
+        }
+
+        public static void testFun(object obj)
+        {
+            sema.WaitOne();
+            Console.WriteLine(obj.ToString() + "____IN" + DateTime.Now.ToString());
+            Thread.Sleep(5000);
+            Console.WriteLine(obj.ToString() + "__________OUT" + DateTime.Now.ToString());
+            sema.Release();
+        }
+
+        private Queue m_inputQueue;
+        public Program()
+        {
+            m_inputQueue = new Queue();
+        }
+
+        //Add an element to the queue and obtain the monitor lock for the queue object.
+        public void AddElement(object qValue)
+        {
+            //Lock the queue.
+            Monitor.Enter(m_inputQueue);
+            //Add element
+            m_inputQueue.Enqueue(qValue);
+            //Unlock the queue.
+            Monitor.Exit(m_inputQueue);
+        }
+
+        //Try to add an element to the queue.
+        //Add the element to the queue only if the queue object is unlocked.
+        public bool AddElementWithoutWait(object qValue)
+        {
+            //Determine whether the queue is locked 
+            if (!Monitor.TryEnter(m_inputQueue))
+                return false;
+            m_inputQueue.Enqueue(qValue);
+
+            Monitor.Exit(m_inputQueue);
+            return true;
+        }
+
+        //Try to add an element to the queue. 
+        //Add the element to the queue only if during the specified time the queue object will be unlocked.
+        public bool WaitToAddElement(object qValue, int waitTime)
+        {
+            //Wait while the queue is locked.
+            if (!Monitor.TryEnter(m_inputQueue, waitTime))
+                return false;
+            m_inputQueue.Enqueue(qValue);
+            Monitor.Exit(m_inputQueue);
+
+            return true;
+        }
+
+        //Delete all elements that equal the given object and obtain the monitor lock for the queue object.
+        public void DeleteElement(object qValue)
+        {
+            //Lock the queue.
+            Monitor.Enter(m_inputQueue);
+            int counter = m_inputQueue.Count;
+            while (counter > 0)
+            {
+                //Check each element.
+                object elm = m_inputQueue.Dequeue();
+                if (!elm.Equals(qValue))
+                {
+                    m_inputQueue.Enqueue(elm);
+                }
+                --counter;
+            }
+            //Unlock the queue.
+            Monitor.Exit(m_inputQueue);
+        }
+
+        //Print all queue elements.
+        public void PrintAllElements()
+        {
+            //Lock the queue.
+            Monitor.Enter(m_inputQueue);
+            IEnumerator elmEnum = m_inputQueue.GetEnumerator();
+            while (elmEnum.MoveNext())
+            {
+                //Print the next element.
+                Console.WriteLine(elmEnum.Current.ToString());
+            }
+            //Unlock the queue.
+            Monitor.Exit(m_inputQueue);
+        }
+
+
+        private static void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            WebClient client = new WebClient
+            {
+                Encoding = System.Text.Encoding.GetEncoding("utf-8")
+            };
+
+            var html = client.DownloadString("http://i3.maidiyun.com/platform/laser-code.html?v=1.0");
+            Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "......" + "未签。");
+            if (html.IndexOf("待售") != -1)
+            {
+                if (timer != null)
+                    timer.Stop();
+
+                // 发送5条短信
+                for (int i = 0; i < 5; i++)
+                {
+                    // 发送短信
+                    //SmsMessage.Send("152****7178", "SMS_92310001", new { name = "Emrys", status = "恭喜恭喜恭喜，房子已签售！" });
+                    Thread.Sleep(5 * 1000);
+                }
+
+            }
+        }
+
+
+        static async void MakeRequest()
+        {
+            var client = new HttpClient();
+            var queryString = HttpUtility.ParseQueryString(string.Empty);
+
+            // Request headers
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "<key>");//Face API key
+
+            // Request parameters
+            queryString["returnFaceId"] = "true";
+            queryString["returnFaceLandmarks"] = "false";
+            queryString["returnFaceAttributes"] = "age";
+            var uri = "https://api.cognitive.azure.cn/face/v1.0/detect?" + queryString;
+
+            HttpResponseMessage response;
+
+            // Request body
+            byte[] byteData = Encoding.UTF8.GetBytes("{\"url\":\"http://imgsrc.baidu.com/baike/pic/item/4034970a304e251ff1e3819aa486c9177f3e53bf.jpg\"}");//图片URL
+
+            using (var content = new ByteArrayContent(byteData))
+            {
+                response = await client.PostAsync(uri, content);
+            }
+
+            //response result
+            string result = await response.Content.ReadAsStringAsync();
+            Console.WriteLine("response:" + result);
+        }
+
+
+        public class MyClass
+        {
+            public string vasdfasdfal { get; set; }
+            public int? val { get; set; }
+        }
+        public class MyClass1
+        {
+            public string aaaaaa { get; set; }
+            public int valb { get; set; }
+        }
+
+        public void RunMe()
+        {
+            Console.WriteLine("RunMe called");
         }
 
 
@@ -748,6 +1100,49 @@ namespace ZDB.ConsoleApplication
                 }
 
                 return this.Dictionary.ContainsKey(binder.Name);
+            }
+        }
+    }
+
+    class Account
+    {
+        private object thisLock = new object();
+        int balance;
+        Random r = new Random();
+
+        public Account(int initial)
+        {
+            balance = initial;
+        }
+
+        int Withdraw(int amount)
+        {
+            if (balance < 0)
+            {
+                throw new Exception("Negative Balance");
+            }
+            lock (thisLock)
+            {
+                if (balance >= amount)
+                {
+                    Console.WriteLine("Balance before Withdrawal :  " + balance);
+                    Console.WriteLine("Amount to Withdraw        : -" + amount);
+                    balance = balance - amount;
+                    Console.WriteLine("Balance after Withdrawal  :  " + balance);
+                    return amount;
+                }
+                else
+                {
+                    return 0; // transaction rejected
+                }
+            }
+        }
+
+        public void DoTransactions()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                Withdraw(r.Next(1, 100));
             }
         }
     }
