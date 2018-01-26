@@ -115,6 +115,10 @@
       <Project>{4fcd507e-7af5-423f-b245-66d7020b9b19}</Project>
       <Name>ZDB.DBRepository</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ZDB.DesignPatterns\ZDB.DesignPatterns.csproj">
+      <Project>{d632934b-2947-4539-8ea0-029be4530cf2}</Project>
+      <Name>ZDB.DesignPatterns</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ZDB.GenerateUniqueID\ZDB.GenerateUniqueID.csproj">
       <Project>{1baca4e0-74c8-48c8-895f-2bd6ba45f08f}</Project>
       <Name>ZDB.GenerateUniqueID</Name>

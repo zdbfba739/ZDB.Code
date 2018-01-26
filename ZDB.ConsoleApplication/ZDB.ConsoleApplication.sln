@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZDB.WebAPI", "ZDB.WebAPI\ZD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{98B0EF77-0FF8-4CD7-A1B3-0AC1155AF0AD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZDB.DesignPatterns", "ZDB.DesignPatterns\ZDB.DesignPatterns.csproj", "{D632934B-2947-4539-8EA0-029BE4530CF2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{98B0EF77-0FF8-4CD7-A1B3-0AC1155AF0AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98B0EF77-0FF8-4CD7-A1B3-0AC1155AF0AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98B0EF77-0FF8-4CD7-A1B3-0AC1155AF0AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D632934B-2947-4539-8EA0-029BE4530CF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D632934B-2947-4539-8EA0-029BE4530CF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D632934B-2947-4539-8EA0-029BE4530CF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D632934B-2947-4539-8EA0-029BE4530CF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

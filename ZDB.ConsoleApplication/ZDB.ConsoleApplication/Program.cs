@@ -22,10 +22,13 @@ using System.Web;
 using ZDB.GenerateUniqueID;
 using ZDB.Images.VerificationCode;
 using System.Web.Script.Serialization;
+using System.Xml;
+using Newtonsoft.Json;
 using NPOI.XWPF.UserModel;
 using ZDB.DBRepository.DbFactory;
 using ZDB.DBRepository.Entity;
 using ZDB.Images.ZoomPic;
+using ZDB.DesignPatterns;
 
 namespace ZDB.ConsoleApplication
 {
@@ -40,6 +43,9 @@ namespace ZDB.ConsoleApplication
         /// </summary>
         static Semaphore sema = new Semaphore(5, 5);
         const int cycleNum = 20;
+
+        static ReaderWriterLockSlim LogWriteLock = new ReaderWriterLockSlim();
+
         static void Main(string[] args)
         {
             #region 唯一标识
@@ -659,6 +665,7 @@ namespace ZDB.ConsoleApplication
             //    t.Join(); 
             #endregion
 
+            #region 多线程
             //var spath = "E:";
             //for (int i = 1; i <= 30; i++)
             //{
@@ -699,13 +706,102 @@ namespace ZDB.ConsoleApplication
             //sample.PrintAllElements();
 
 
-            for (int i = 0; i < cycleNum; i++)
+            //for (int i = 0; i < cycleNum; i++)
+            //{
+            //    Thread td = new Thread(new ParameterizedThreadStart(testFun));
+            //    td.Name = string.Format("编号{0}", i.ToString());
+            //    td.Start(td.Name);
+            //}
+            //Console.ReadKey(); 
+            #endregion
+
+            #region 操作同一文件防报错
+            //var dd = SingletonPattern.GetInstance();
+
+            ////dd.GetUUID();
+
+            //for (int i = 0; i < 1000; i++)
+            //{
+            //    Thread thread = new Thread((obj) =>
+            //      {
+            //          for (int j = 0; j < 100; j++)
+            //          {
+            //              LogWriteLock.EnterWriteLock();
+            //              File.AppendAllText(@"C:\Users\admin\Desktop\新建文件夹\1.txt", dd.GetUUID()+"\r\n");
+            //              LogWriteLock.ExitWriteLock();
+            //              //Console.WriteLine(obj..ManagedThreadId + "=" + dd.GetUUID());
+            //          }
+            //      });
+            //    thread.Start(i);
+            //} 
+            #endregion
+
+            //var dd = new List<Goods>
+            //{
+            //    new Goods
+            //    {
+            //        ProdName = "123",
+            //        SkuName = "s123",
+            //        Num = 2,
+            //        ZhongLiang = 12.1
+            //    },
+            //    new Goods
+            //    {
+            //        ProdName = "123",
+            //        SkuName = "s1234",
+            //        Num = 3,
+            //        ZhongLiang = 12.3
+            //    },
+            //    new Goods
+            //    {
+            //        ProdName = "123",
+            //        SkuName = "s123",
+            //        Num = 3,
+            //        ZhongLiang = 12.4
+            //    }
+            //};
+
+            var ddd = new Goods
             {
-                Thread td = new Thread(new ParameterizedThreadStart(testFun));
-                td.Name = string.Format("编号{0}", i.ToString());
-                td.Start(td.Name);
-            }
-            Console.ReadKey();
+                ProdName = "123",
+                SkuName = "s123",
+                Num = 2,
+                ZhongLiang = 12.1
+            };
+
+            //对象转json
+            var json = JsonConvert.SerializeObject(ddd);
+
+            //json转xml
+            //var xml = JsonConvert.DeserializeXmlNode(json);
+            var xml = JsonConvert.DeserializeXNode(json);
+
+            //xml转json
+            //json = JsonConvert.SerializeXmlNode(xml);
+            
+            //json转对象
+            ddd = JsonConvert.DeserializeObject<Goods>(json);
+
+
+            JSON.XmlToJSON(xml);
+
+
+            //var ddd = dd.GroupBy(x => new { x.ProdName, x.SkuName }).Select(y =>
+            //    {
+            //        var num = y.Sum(z => z.Num);
+            //        var zl = y.Sum(z => z.ZhongLiang) / num;
+            //        return new
+            //        {
+            //            y.Key.ProdName,
+            //            y.Key.SkuName,
+            //            Num = num,
+            //            ZhongLiang = zl
+
+            //        };
+            //    });
+
+
+
 
 
             Console.ReadKey();
@@ -713,6 +809,13 @@ namespace ZDB.ConsoleApplication
             //Console.ReadLine();
 
             //Console.Read();
+        }
+        public class Goods
+        {
+            public string ProdName { get; set; }
+            public string SkuName { get; set; }
+            public int Num { get; set; }
+            public double ZhongLiang { get; set; }
         }
 
         public static void testFun(object obj)
