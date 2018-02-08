@@ -10,11 +10,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
+using System.Drawing;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,12 +26,21 @@ using ZDB.GenerateUniqueID;
 using ZDB.Images.VerificationCode;
 using System.Web.Script.Serialization;
 using System.Xml;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.parser;
 using Newtonsoft.Json;
+using NPOI.HSSF.UserModel;
+using NPOI.HSSF.Util;
+using NPOI.SS.UserModel;
+using NPOI.SS.Util;
+using NPOI.XSSF.UserModel;
 using NPOI.XWPF.UserModel;
 using ZDB.DBRepository.DbFactory;
 using ZDB.DBRepository.Entity;
 using ZDB.Images.ZoomPic;
 using ZDB.DesignPatterns;
+using PictureType = NPOI.SS.UserModel.PictureType;
 
 namespace ZDB.ConsoleApplication
 {
@@ -46,6 +58,15 @@ namespace ZDB.ConsoleApplication
 
         static ReaderWriterLockSlim LogWriteLock = new ReaderWriterLockSlim();
 
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr _lopen(string lpPathName, int iReadWrite);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool CloseHandle(IntPtr hObject);
+
+        public const int OF_READWRITE = 2;
+        public const int OF_SHARE_DENY_NONE = 0x40;
+        public static readonly IntPtr HFILE_ERROR = new IntPtr(-1);
         static void Main(string[] args)
         {
             #region 唯一标识
@@ -736,6 +757,7 @@ namespace ZDB.ConsoleApplication
             //} 
             #endregion
 
+            #region Model Json Xml互转
             //var dd = new List<Goods>
             //{
             //    new Goods
@@ -761,30 +783,26 @@ namespace ZDB.ConsoleApplication
             //    }
             //};
 
-            var ddd = new Goods
-            {
-                ProdName = "123",
-                SkuName = "s123",
-                Num = 2,
-                ZhongLiang = 12.1
-            };
+            //var ddd = new Goods
+            //{
+            //    ProdName = "123",
+            //    SkuName = "s123",
+            //    Num = 2,
+            //    ZhongLiang = 12.1
+            //};
 
             //对象转json
-            var json = JsonConvert.SerializeObject(ddd);
+            //var json = JsonConvert.SerializeObject(ddd);
 
             //json转xml
             //var xml = JsonConvert.DeserializeXmlNode(json);
-            var xml = JsonConvert.DeserializeXNode(json);
+            //var xml = JsonConvert.DeserializeXNode(json);
 
             //xml转json
             //json = JsonConvert.SerializeXmlNode(xml);
-            
+
             //json转对象
-            ddd = JsonConvert.DeserializeObject<Goods>(json);
-
-
-            JSON.XmlToJSON(xml);
-
+            //ddd = JsonConvert.DeserializeObject<Goods>(json);
 
             //var ddd = dd.GroupBy(x => new { x.ProdName, x.SkuName }).Select(y =>
             //    {
@@ -798,18 +816,578 @@ namespace ZDB.ConsoleApplication
             //            ZhongLiang = zl
 
             //        };
-            //    });
+            //    }); 
+            #endregion
+
+            #region pdf操作
+            ////实例化
+            //iTextSharp.text.Document document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A4);
+            ////设置文档大小
+            //iTextSharp.text.Rectangle rect = new iTextSharp.text.Rectangle(600, 450);
+            //document.SetPageSize(rect);
+
+            //PdfWriter.GetInstance(document, new System.IO.FileStream("F:\\test1.pdf", System.IO.FileMode.Create));
+
+            //PdfPTable table = new PdfPTable(4);
+
+            //PdfPCell header = new PdfPCell(new Phrase("用户信息"));
+            //header.Colspan = 3;
+            //header.HorizontalAlignment = 1;
+            //table.AddCell(header);
+
+            //table.AddCell("姓名");
+            //table.AddCell("年龄");
+            //table.AddCell("性别");
+            //table.AddCell("生日");
+
+            //table.AddCell("李雷");
+            //table.AddCell("23");
+            //table.AddCell("男");
+            //table.AddCell("1980-01-01");
+
+            //table.AddCell("韩梅梅");
+            //table.AddCell("22");
+            //table.AddCell("女");
+            //table.AddCell("1982-04-03");
+
+            //table.AddCell("隔壁老王");
+            //table.AddCell("25");
+            //table.AddCell("男");
+            //table.AddCell("1977-03-12");
+
+            //document.Open();
+            //document.Add(table);
+            //document.Close();
 
 
+            //PdfReader reader = new PdfReader("F:\\navicat.pdf");
+
+            //var tempBookmarks = SimpleBookmark.GetBookmark(reader);
+
+            //CreateWJJ(tempBookmarks); 
+            #endregion
+
+            #region 生产xls表格
+
+            //IWorkbook workbook = new HSSFWorkbook();
+
+            ////新建工作表
+            //var sheet = workbook.CreateSheet("sheet1");
+
+            //#region 第一行
+            ////设置第一行单元格
+            //sheet.AddMergedRegion(new CellRangeAddress(0, 0, 0, 4));
+            //sheet.AddMergedRegion(new CellRangeAddress(0, 0, 5, 14));
+            //sheet.AddMergedRegion(new CellRangeAddress(0, 0, 15, 19));
+
+            //var bytes = System.IO.File.ReadAllBytes(@"E:\my3Dparts\MyCode\Code\ZDB.Code\ZDB.ConsoleApplication\ZDB.ConsoleApplication\bin\Debug\图片1.png");
+            //var pictureIdx = workbook.AddPicture(bytes, PictureType.JPEG);
+            //var patriarch = sheet.CreateDrawingPatriarch();
+
+            ////添加图片
+            //var anchor = new HSSFClientAnchor(20, 5, 3, 5, 0, 0, 5, 1);
+            //var pict = patriarch.CreatePicture(anchor, pictureIdx);
+            //pict.Resize(0.99, 0.99);
+            ////创建第一行
+            //var row = sheet.CreateRow(0);
+            //row.CreateCell(5).SetCellValue("货物交接清单\nCARGO RECEIPT FOR AIR COOLED CONDENSER");
+            //row.CreateCell(15).SetCellValue("车次编号： NO.4");
+            //row.Height = 50 * 20;
+            //#endregion
+
+            //#region 第二行
+            ////设置第二行单元格
+            //sheet.AddMergedRegion(new CellRangeAddress(1, 1, 0, 3));
+            //sheet.AddMergedRegion(new CellRangeAddress(1, 1, 4, 8));
+            //sheet.AddMergedRegion(new CellRangeAddress(1, 1, 9, 11));
+            //sheet.AddMergedRegion(new CellRangeAddress(1, 1, 12, 14));
+            //sheet.AddMergedRegion(new CellRangeAddress(1, 1, 15, 16));
+            //sheet.AddMergedRegion(new CellRangeAddress(1, 1, 17, 19));
+
+            ////创建第二行
+            //var row1 = sheet.CreateRow(1);
+            //row1.CreateCell(0).SetCellValue("项目名称\nProject Name");
+            //row1.CreateCell(4).SetCellValue("120万吨/年连续重整装置重整循环氢机组");
+            //row1.CreateCell(9).SetCellValue("项目号\nProjectNo.");
+            //row1.CreateCell(12).SetCellValue("A0021");
+            //row1.CreateCell(15).SetCellValue("订单号\nPO No: ");
+            //row1.Height = 50 * 20;
+            //#endregion
+
+            //#region 第三行
+            ////设置第三行单元格
+            //sheet.AddMergedRegion(new CellRangeAddress(2, 2, 0, 9));
+            //sheet.AddMergedRegion(new CellRangeAddress(2, 2, 10, 14));
+            //sheet.AddMergedRegion(new CellRangeAddress(2, 2, 15, 19));
+
+            ////创建第三行
+            //var row2 = sheet.CreateRow(2);
+            //row2.CreateCell(0).SetCellValue("Shipping Mark：");
+            //row2.CreateCell(10).SetCellValue("提货凭证\nTaking Evidence");
+            //row2.Height = 50 * 20;
+            //#endregion
+
+            //#region 第四行
+            ////设置第四行单元格
+            //sheet.AddMergedRegion(new CellRangeAddress(3, 3, 0, 2));
+            //sheet.AddMergedRegion(new CellRangeAddress(3, 3, 3, 9));
+            //sheet.AddMergedRegion(new CellRangeAddress(3, 3, 10, 14));
+            //sheet.AddMergedRegion(new CellRangeAddress(3, 3, 15, 19));
+
+            ////创建第四行
+            //var row3 = sheet.CreateRow(3);
+            //row3.CreateCell(0).SetCellValue("发货人Consigner");
+            //row3.CreateCell(3).SetCellValue("杭州汽轮辅机有限公司\n叶群 13067960835");
+            //row3.Height = 50 * 20;
+            //#endregion
+
+            //#region 第五行
+            ////设置第五行单元格
+            //sheet.AddMergedRegion(new CellRangeAddress(4, 4, 0, 2));
+            //sheet.AddMergedRegion(new CellRangeAddress(4, 4, 3, 9));
+            //sheet.AddMergedRegion(new CellRangeAddress(4, 4, 10, 14));
+            //sheet.AddMergedRegion(new CellRangeAddress(4, 4, 15, 19));
+
+            ////创建第五行
+            //var row4 = sheet.CreateRow(4);
+            //row4.CreateCell(0).SetCellValue("收货人Receiver");
+            //row4.CreateCell(3).SetCellValue("王修华（供应部）13791875706\n 0536 - 3556556");
+            //row4.CreateCell(10).SetCellValue("运输方式\nTransport.Mode");
+            //row4.CreateCell(15).SetCellValue("汽运");
+            //row4.Height = 50 * 20;
+            //#endregion
+
+            //#region 第六行
+            ////设置第六行单元格
+            //sheet.AddMergedRegion(new CellRangeAddress(5, 5, 0, 2));
+            //sheet.AddMergedRegion(new CellRangeAddress(5, 5, 3, 9));
+            //sheet.AddMergedRegion(new CellRangeAddress(5, 5, 10, 14));
+            //sheet.AddMergedRegion(new CellRangeAddress(5, 5, 15, 19));
+
+            ////创建第六行
+            //var row5 = sheet.CreateRow(5);
+            //row5.CreateCell(0).SetCellValue("运输单位\nTransport.Unit");
+            //row5.CreateCell(3).SetCellValue("杭汽轮运输分公司 ");
+            //row5.CreateCell(10).SetCellValue("发货日期\nDelivery Date");
+            //row5.CreateCell(15).SetCellValue("2016-8-23");
+            //row5.Height = 50 * 20;
+            //#endregion
+
+            //#region 第七行
+            ////设置第七行单元格
+            //sheet.AddMergedRegion(new CellRangeAddress(6, 6, 0, 2));
+            //sheet.AddMergedRegion(new CellRangeAddress(6, 6, 3, 9));
+            //sheet.AddMergedRegion(new CellRangeAddress(6, 6, 10, 14));
+            //sheet.AddMergedRegion(new CellRangeAddress(6, 6, 15, 19));
+
+            ////创建第七行
+            //var row6 = sheet.CreateRow(6);
+            //row6.CreateCell(0).SetCellValue("到货站（点）\nArrival Station(Point)");
+            //row6.CreateCell(3).SetCellValue("山东省青州市口埠徐集，中化弘润石油化工有限公司");
+            //row6.CreateCell(10).SetCellValue("预计到货日期\nforecast delivery date");
+            //row6.CreateCell(15).SetCellValue("2016-8-25");
+            //row6.Height = 50 * 20;
+            //#endregion
+
+            //#region 第八行
+            ////设置第八行单元格
+            //sheet.AddMergedRegion(new CellRangeAddress(7, 7, 0, 19));
+
+            ////创建第八行
+            //var row7 = sheet.CreateRow(7);
+            //row7.CreateCell(0).SetCellValue("货物说明Goods Description(Details are as per attached Summary Packing List详见内附的装箱清单)");
+            //row7.Height = 25 * 20;
+            //#endregion
+
+            //#region 第九行
+            ////设置第九行单元格
+            //sheet.AddMergedRegion(new CellRangeAddress(8, 8, 0, 0));
+            //sheet.AddMergedRegion(new CellRangeAddress(8, 8, 1, 1));
+            //sheet.AddMergedRegion(new CellRangeAddress(8, 8, 2, 5));
+            //sheet.AddMergedRegion(new CellRangeAddress(8, 8, 6, 6));
+            //sheet.AddMergedRegion(new CellRangeAddress(8, 8, 7, 7));
+            //sheet.AddMergedRegion(new CellRangeAddress(8, 8, 8, 10));
+            //sheet.AddMergedRegion(new CellRangeAddress(8, 8, 11, 12));
+            //sheet.AddMergedRegion(new CellRangeAddress(8, 8, 13, 13));
+            //sheet.AddMergedRegion(new CellRangeAddress(8, 8, 14, 15));
+            //sheet.AddMergedRegion(new CellRangeAddress(8, 8, 16, 17));
+            //sheet.AddMergedRegion(new CellRangeAddress(8, 8, 18, 18));
+            //sheet.AddMergedRegion(new CellRangeAddress(8, 8, 19, 19));
+
+            ////创建第九行
+            //var row8 = sheet.CreateRow(8);
+            //row8.CreateCell(0).SetCellValue("包\n装\n编\n号");
+            //row8.CreateCell(1).SetCellValue("箱件号");
+            //row8.CreateCell(2).SetCellValue("位号");
+            //row8.CreateCell(6).SetCellValue("货物\n名称");
+            //row8.CreateCell(7).SetCellValue("包装\n形式");
+            //row8.CreateCell(8).SetCellValue("包装尺寸cm\n（长×宽×高）");
+            //row8.CreateCell(11).SetCellValue("数\n量\n(包)");
+            //row8.CreateCell(13).SetCellValue("净重\n(kg/包)");
+            //row8.CreateCell(14).SetCellValue("总重(净)\n(kg)");
+            //row8.CreateCell(16).SetCellValue("毛重\n(kg/包)");
+            //row8.CreateCell(18).SetCellValue("总重\n(毛)\n(kg)");
+            //row8.CreateCell(19).SetCellValue("备注\nRemarks");
+            //row8.Height = 60 * 20;
+
+            ////row8.Height = 25 * 20;
+            ////row8.GetCell(0).CellStyle = style0;
+            ////row8.GetCell(1).CellStyle = style0;
+            ////row8.GetCell(2).CellStyle = style0;
+            ////row8.GetCell(6).CellStyle = style0;
+            ////row8.GetCell(7).CellStyle = style0;
+            ////row8.GetCell(8).CellStyle = style0;
+            ////row8.GetCell(11).CellStyle = style0;
+            ////row8.GetCell(13).CellStyle = style0;
+            ////row8.GetCell(14).CellStyle = style0;
+            ////row8.GetCell(16).CellStyle = style0;
+            ////row8.GetCell(18).CellStyle = style0;
+            ////row8.GetCell(19).CellStyle = style0;
+            ////row8.RowStyle= style0;
 
 
+            //#endregion
 
+            //#region 动态数据行
+            //var dbCount = 4;
+            ////循环加数据
+            //for (var i = 1; i <= dbCount; i++)
+            //{
+            //    //设置单元格
+            //    sheet.AddMergedRegion(new CellRangeAddress(8 + i, 8 + i, 0, 0));
+            //    sheet.AddMergedRegion(new CellRangeAddress(8 + i, 8 + i, 1, 1));
+            //    sheet.AddMergedRegion(new CellRangeAddress(8 + i, 8 + i, 2, 5));
+            //    sheet.AddMergedRegion(new CellRangeAddress(8 + i, 8 + i, 6, 6));
+            //    sheet.AddMergedRegion(new CellRangeAddress(8 + i, 8 + i, 7, 7));
+            //    sheet.AddMergedRegion(new CellRangeAddress(8 + i, 8 + i, 8, 10));
+            //    sheet.AddMergedRegion(new CellRangeAddress(8 + i, 8 + i, 11, 12));
+            //    sheet.AddMergedRegion(new CellRangeAddress(8 + i, 8 + i, 13, 13));
+            //    sheet.AddMergedRegion(new CellRangeAddress(8 + i, 8 + i, 14, 15));
+            //    sheet.AddMergedRegion(new CellRangeAddress(8 + i, 8 + i, 16, 17));
+            //    sheet.AddMergedRegion(new CellRangeAddress(8 + i, 8 + i, 18, 18));
+            //    sheet.AddMergedRegion(new CellRangeAddress(8 + i, 8 + i, 19, 19));
+
+            //    //创建行
+            //    var rowNew = sheet.CreateRow(8 + i);
+            //    rowNew.CreateCell(0).SetCellValue(i);
+            //    rowNew.CreateCell(1).SetCellValue("A0021-1");
+            //    rowNew.CreateCell(2).SetCellValue("C-3201-ST");
+            //    rowNew.CreateCell(6).SetCellValue("管束");
+            //    rowNew.CreateCell(7).SetCellValue("裸装");
+            //    rowNew.CreateCell(8).SetCellValue("778*295*333");
+            //    rowNew.CreateCell(11).SetCellValue("1");
+            //    rowNew.CreateCell(13).SetCellValue("");
+            //    rowNew.CreateCell(14).SetCellValue("");
+            //    rowNew.CreateCell(16).SetCellValue("");
+            //    rowNew.CreateCell(18).SetCellValue("18500");
+            //    rowNew.CreateCell(19).SetCellValue("见附件详单");
+            //}
+            //#endregion
+
+            //#region 合计行
+            ////设置单元格
+            //sheet.AddMergedRegion(new CellRangeAddress(9 + dbCount, 9 + dbCount, 0, 0));
+            //sheet.AddMergedRegion(new CellRangeAddress(9 + dbCount, 9 + dbCount, 1, 1));
+            //sheet.AddMergedRegion(new CellRangeAddress(9 + dbCount, 9 + dbCount, 2, 5));
+            //sheet.AddMergedRegion(new CellRangeAddress(9 + dbCount, 9 + dbCount, 6, 6));
+            //sheet.AddMergedRegion(new CellRangeAddress(9 + dbCount, 9 + dbCount, 7, 7));
+            //sheet.AddMergedRegion(new CellRangeAddress(9 + dbCount, 9 + dbCount, 8, 10));
+            //sheet.AddMergedRegion(new CellRangeAddress(9 + dbCount, 9 + dbCount, 11, 12));
+            //sheet.AddMergedRegion(new CellRangeAddress(9 + dbCount, 9 + dbCount, 13, 13));
+            //sheet.AddMergedRegion(new CellRangeAddress(9 + dbCount, 9 + dbCount, 14, 15));
+            //sheet.AddMergedRegion(new CellRangeAddress(9 + dbCount, 9 + dbCount, 16, 17));
+            //sheet.AddMergedRegion(new CellRangeAddress(9 + dbCount, 9 + dbCount, 18, 18));
+            //sheet.AddMergedRegion(new CellRangeAddress(9 + dbCount, 9 + dbCount, 19, 19));
+
+            ////创建行
+            //var rowTotal = sheet.CreateRow(9 + dbCount);
+            //rowTotal.CreateCell(0).SetCellValue("Total\n总计");
+            //rowTotal.CreateCell(1).SetCellValue("");
+            //rowTotal.CreateCell(2).SetCellValue("");
+            //rowTotal.CreateCell(6).SetCellValue("");
+            //rowTotal.CreateCell(7).SetCellValue("");
+            //rowTotal.CreateCell(8).SetCellValue("");
+            //rowTotal.CreateCell(11).SetCellValue("");
+            //rowTotal.CreateCell(13).SetCellValue("");
+            //rowTotal.CreateCell(14).SetCellValue("");
+            //rowTotal.CreateCell(16).SetCellValue("");
+            //rowTotal.CreateCell(18).SetCellValue("");
+            //rowTotal.CreateCell(19).SetCellValue("");
+            //#endregion
+
+            //#region 最后行
+            ////设置单元格
+            //sheet.AddMergedRegion(new CellRangeAddress(10 + dbCount, 10 + dbCount, 0, 6));
+            //sheet.AddMergedRegion(new CellRangeAddress(10 + dbCount, 10 + dbCount, 7, 19));
+
+            ////创建行
+            //var rowLas = sheet.CreateRow(10 + dbCount);
+            //rowLas.CreateCell(0).SetCellValue("搬运、储存产品的防护要求\nProtection requirements for\nCarrying and storage of goods");
+            //rowLas.CreateCell(7).SetCellValue("√小心轻放；       √   防潮；             √    防水；\nHandling with care.  Damp - proof、           water proof\n√防火；            √  防变形；            √  防撞击；\nfire proof             preventing distortion      preventing impact\n√防压；             √   建议室内存放。       √ 平稳移动\npreventing press      storing indoor             Smoothly moving ");
+            //rowLas.Height = 100 * 20;
+            //#endregion
+
+            ////设置单元格
+            //sheet.AddMergedRegion(new CellRangeAddress(11 + dbCount, 11 + dbCount, 0, 19));
+            //var rowRemark = sheet.CreateRow(11 + dbCount);
+            //rowRemark.CreateCell(0).SetCellValue("备注：管束运输工装为HTAC（杭汽辅机）财产，产品安装完毕后HTAC将对工装进行回收，请用户/安装公司拆卸完管束后集中堆放于一处并妥善保管。");
+            //rowRemark.Height = 50 * 20;
+
+            //sheet.AddMergedRegion(new CellRangeAddress(12 + dbCount, 12 + dbCount, 0, 19));
+            //sheet.CreateRow(12 + dbCount);
+
+            //sheet.AddMergedRegion(new CellRangeAddress(13 + dbCount, 13 + dbCount, 0, 19));
+            //var rowLink = sheet.CreateRow(13 + dbCount);
+            //rowLink.CreateCell(0).SetCellValue(@"发货人：   苏其高   13806476386     鲁G.46786                        收货人：");
+
+
+            //#region 样式处理
+            //ICellStyle style = workbook.CreateCellStyle();
+            //style.BorderBottom = BorderStyle.Thin;
+            //style.BorderLeft = BorderStyle.Thin;
+            //style.BorderRight = BorderStyle.Thin;
+            //style.BorderTop = BorderStyle.Thin;
+            //style.BottomBorderColor = HSSFColor.Black.Index;
+            //style.LeftBorderColor = HSSFColor.Black.Index;
+            //style.RightBorderColor = HSSFColor.Black.Index;
+            //style.TopBorderColor = HSSFColor.Black.Index;
+            //style.Alignment = HorizontalAlignment.Center;
+            //style.VerticalAlignment = VerticalAlignment.Center;
+            //style.WrapText = true;
+            //for (var i = 0; i < 15; i++)
+            //{
+            //    var rowCell = sheet.GetRow(i);
+            //    for (var j = 0; j <= 19; j++)
+            //    {
+            //        NPOI.SS.UserModel.ICell singleCell = HSSFCellUtil.GetCell(rowCell, (short)j);
+            //        singleCell.CellStyle = style;
+            //    }
+            //}
+
+            //ICellStyle style0 = workbook.CreateCellStyle();
+            //style0.BorderBottom = BorderStyle.Thin;
+            //style0.BorderLeft = BorderStyle.Thin;
+            //style0.BorderRight = BorderStyle.Thin;
+            //style0.BorderTop = BorderStyle.Thin;
+            //style0.BottomBorderColor = HSSFColor.Black.Index;
+            //style0.LeftBorderColor = HSSFColor.Black.Index;
+            //style0.RightBorderColor = HSSFColor.Black.Index;
+            //style0.TopBorderColor = HSSFColor.Black.Index;
+            //style0.Alignment = HorizontalAlignment.Center;
+            //style0.VerticalAlignment = VerticalAlignment.Center;
+            //style0.WrapText = true;
+            ////新建一个字体样式对象
+            //IFont font = workbook.CreateFont();
+            ////设置字体加粗样式
+            //font.IsBold = true;
+            ////使用SetFont方法将字体样式添加到单元格样式中 
+            //style0.SetFont(font);
+
+            //var dd = sheet.GetRow(7);
+            //dd.GetCell(0).CellStyle = style0;
+
+            ////设置列宽
+            //sheet.SetColumnWidth(0, 6 * 256);
+            //sheet.SetColumnWidth(1, 10 * 256);
+            //sheet.SetColumnWidth(2, 6 * 256);
+            //sheet.SetColumnWidth(3, 3 * 256);
+            //sheet.SetColumnWidth(4, 2 * 256);
+            //sheet.SetColumnWidth(5, 1 * 256);
+            //sheet.SetColumnWidth(6, 7 * 256);
+            //sheet.SetColumnWidth(7, 5 * 256);
+            //sheet.SetColumnWidth(8, 5 * 256);
+            //sheet.SetColumnWidth(9, 7 * 256);
+            //sheet.SetColumnWidth(10, 2 * 256);
+            //sheet.SetColumnWidth(11, 3 * 256);
+            //sheet.SetColumnWidth(12, 2 * 256);
+            //sheet.SetColumnWidth(13, 8 * 256);
+            //sheet.SetColumnWidth(14, 5 * 256);
+            //sheet.SetColumnWidth(15, 4 * 256);
+            //sheet.SetColumnWidth(16, 4 * 256);
+            //sheet.SetColumnWidth(17, 5 * 256);
+            //sheet.SetColumnWidth(18, 6 * 256);
+            //sheet.SetColumnWidth(19, 10 * 256);
+            //#endregion
+
+            //var file = new FileStream($"d:\\{DateTime.Now:ddHHmmss}.xls", FileMode.Create);
+            //workbook.Write(file);
+            //file.Close(); 
+            #endregion
+
+            // string vFileName = @"C:\Users\admin\Desktop\新建文件夹\1.txt";
+            // if (!File.Exists(vFileName))
+            // {
+            //    // MessageBox.Show("文件都不存在!");
+            //     return;
+            // }
+            // IntPtr vHandle = _lopen(vFileName, OF_READWRITE | OF_SHARE_DENY_NONE);
+            // if (vHandle == HFILE_ERROR)
+            // {
+            //    // MessageBox.Show("文件被占用！");
+            //     return;
+            // }
+            // CloseHandle(vHandle);
+            //// MessageBox.Show("没有被占用！");
+
+            try
+            {
+                string sourceFileName = @"C:\Users\admin\Desktop\Test\1\11.gif";
+                string destFileName = @"C:\Users\admin\Desktop\Test\2\11.gif";
+                File.Move(sourceFileName, destFileName);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+           
+
+
+            Console.WriteLine("ok");
             Console.ReadKey();
-            //Console.WriteLine("ok");
-            //Console.ReadLine();
-
-            //Console.Read();
         }
+        
+
+        /// <summary>
+        /// 设置单元格样式
+        /// </summary>
+        /// <param name="workbook"></param>
+        /// <param name="cell"></param>
+        private static void setCellStyle(IWorkbook workbook, NPOI.SS.UserModel.ICell cell)
+        {
+            ICellStyle style0 = workbook.CreateCellStyle();
+            style0.BorderBottom = BorderStyle.Thin;
+            cell.CellStyle = style0;
+            //var fCellStyle = (XSSFCellStyle)workbook.CreateCellStyle();
+            //var ffont = (XSSFFont)workbook.CreateFont();
+            ////ffont.FontHeight = 20 * 20;
+            //ffont.FontName = "宋体";
+            //ffont.Color =new XSSFColor();
+            //fCellStyle.SetFont(ffont);
+
+            //fCellStyle.VerticalAlignment = NPOI.SS.UserModel.VerticalAlignment.Center;//垂直对齐
+            //fCellStyle.Alignment = NPOI.SS.UserModel.HorizontalAlignment.Center;//水平对齐
+            //cell.CellStyle = fCellStyle;
+        }
+
+
+        private static int preNumber = 0;
+        private static string prePath = "";
+        public static void CreateWJJ(IList<Dictionary<string, object>> list, string path = "F:\\Demo")
+        {
+            var a = 1;
+            foreach (var li in list)
+            {
+                var path1 = path + "\\" + a + li["Title"];
+                var dir = new DirectoryInfo(path1);
+                if (!dir.Exists)
+                {
+                    dir.Create();
+                }
+                if (li.ContainsKey("Kids")) // True
+                {
+                    CreateWJJ((IList<Dictionary<string, object>>)li["Kids"], path1);
+                }
+                else
+                {
+                    SavePic(path1, int.Parse(li["Page"].ToString().Split(' ')[0]));
+                }
+                a++;
+            }
+        }
+
+        public static void SavePic(string path, int number)
+        {
+            var device = new Aspose.Pdf.Devices.JpegDevice(80);
+            using (var document = new Aspose.Pdf.Document("F:\\navicat.pdf"))
+            {
+                //图片的路径及名称
+                var ImgPath = path + "\\" + number + ".jpg";
+                using (var fs = new FileStream(ImgPath, FileMode.OpenOrCreate))
+                {
+                    device.Process(document.Pages[number], fs);
+                    fs.Close();
+                }
+            }
+            if (preNumber > 0 && number - preNumber > 1)
+            {
+                using (var document = new Aspose.Pdf.Document("F:\\navicat.pdf"))
+                {
+                    for (int i = 1; i < number - preNumber; i++)
+                    {
+                        //图片的路径及名称
+                        var ImgPath = prePath + "\\" + (preNumber + i) + ".jpg";
+                        using (var fs = new FileStream(ImgPath, FileMode.OpenOrCreate))
+                        {
+                            device.Process(document.Pages[preNumber + i], fs);
+                            fs.Close();
+                        }
+                    }
+
+                }
+            }
+            preNumber = number;
+            prePath = path;
+        }
+
+        private static string readPDF(string fn)
+        {
+            PdfReader p = new PdfReader(fn);
+            //从每一页读出的字符串
+            string str = String.Empty;
+            //"[......]"内部字符串
+            string subStr = String.Empty;
+            //函数返回的字符串
+            string rtStr = String.Empty;
+            //从每一页读出的8位字节数组
+            byte[] b = new byte[0];
+            //"[","]","(",")"在字符串中的位置
+            Int32 bg = 0, ed = 0, subbg = 0, subed = 0;
+            //取得文档总页数
+            int pg = p.NumberOfPages;
+            for (int i = 1; i <= pg; i++)
+            {
+                bg = 0;
+                ed = 0;
+                Array.Resize(ref b, 0);
+                //取得第i页的内容
+                b = p.GetPageContent(i);
+                //下一行是把每一页的取得的字节数据写入一个txt的文件,仅供研究时用
+                //System.IO.File.WriteAllBytes(Application.StartupPath + "//P" + i.ToString() + ".txt", b);
+                StringBuilder sb = new StringBuilder();
+
+                //取得每一页的字节数组,将每一个字节转换为字符,并将数组转换为字符串
+                for (int j = 0; j < b.Length; j++) sb.Append(Convert.ToChar(b[j]));
+                str = sb.ToString();
+                //循环寻找"["和"]",直到找不到"["为止
+                while (bg > -1)
+                {
+                    //取得下一个"["和"]"的位置
+                    bg = str.IndexOf("[", ed);
+                    ed = str.IndexOf("]", bg + 1);
+                    //如果没有下一个"["就跳出循环
+                    if (bg == -1) break;
+                    //取得一个"[]"里的内容,将开始寻找"("和")"的位置初始为0
+                    subStr = str.Substring(bg + 1, ed - bg - 1);
+                    subbg = 0;
+                    subed = 0;
+                    //循环寻找下一个"("和")",直到没有下一个"("就跳出循环
+                    while (subbg > -1)
+                    {
+                        //取得下一对"()"的位置
+                        subbg = subStr.IndexOf("(", subed);
+                        subed = subStr.IndexOf(")", subbg + 1);
+                        //如找不到下一对就跳出
+                        if (subbg == -1) break;
+                        //在返回字符串后面加上新找到的字符串
+                        rtStr += subStr.Substring(subbg + 1, subed - subbg - 1);
+                    }
+                }
+            }
+            //PDF文档中读出来的数据没有换行符,可以根据需要把2个或3个连续的空格改成换行符
+            rtStr = rtStr.Replace("  ", "/r/n");
+            return rtStr;
+        }
+
         public class Goods
         {
             public string ProdName { get; set; }

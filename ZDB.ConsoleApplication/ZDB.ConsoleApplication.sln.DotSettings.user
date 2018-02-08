@@ -2,4 +2,6 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
   &lt;Assembly Path="E:\my3Dparts\MyCode\Code\ZDB.Code\ZDB.ConsoleApplication\packages\ZXing.2.1.1\lib\net20\zxing.dll" /&gt;&#xD;
   &lt;Assembly Path="E:\my3Dparts\MyCode\Code\ZDB.Code\ZDB.ConsoleApplication\packages\NPOI.2.3.0\lib\net40\NPOI.OOXML.dll" /&gt;&#xD;
+  &lt;Assembly Path="E:\my3Dparts\MyCode\Code\ZDB.Code\ZDB.ConsoleApplication\OutRef\itextsharp.pdfa.dll" /&gt;&#xD;
+  &lt;Assembly Path="E:\my3Dparts\MyCode\Code\ZDB.Code\ZDB.ConsoleApplication\OutRef\itextsharp.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>
