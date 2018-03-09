@@ -41,6 +41,7 @@ using ZDB.DBRepository.Entity;
 using ZDB.Images.ZoomPic;
 using ZDB.DesignPatterns;
 using PictureType = NPOI.SS.UserModel.PictureType;
+using Microsoft.VisualBasic;
 
 namespace ZDB.ConsoleApplication
 {
@@ -1214,6 +1215,7 @@ namespace ZDB.ConsoleApplication
             //file.Close(); 
             #endregion
 
+            #region 文件占用处理
             // string vFileName = @"C:\Users\admin\Desktop\新建文件夹\1.txt";
             // if (!File.Exists(vFileName))
             // {
@@ -1227,25 +1229,88 @@ namespace ZDB.ConsoleApplication
             //     return;
             // }
             // CloseHandle(vHandle);
-            //// MessageBox.Show("没有被占用！");
+            //// MessageBox.Show("没有被占用！"); 
+            #endregion
 
-            try
-            {
-                string sourceFileName = @"C:\Users\admin\Desktop\Test\1\11.gif";
-                string destFileName = @"C:\Users\admin\Desktop\Test\2\11.gif";
-                File.Move(sourceFileName, destFileName);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-           
+            #region ASP.NET访问网络映射盘&实现文件上传读取功能
+            //var nfsText = File.ReadAllText( @"/nfs.config", Encoding.UTF8);
+            //var nfsJson = JsonConvert.DeserializeObject<dynamic[]>(nfsText);
+
+            //uint state = 0;
+            //if (!Directory.Exists("Z:"))
+            //{
+            //    state = WNetHelper.WNetAddConnection(@"admin", "654321", @"\\192.168.1.122\down.maidiyun.com", "Z:");
+            //}
+            //if (state.Equals(0))
+            //{
+            //    //创建共享目录的上传路径
+            //    if (!Directory.Exists("Z:\\UpLoad"))
+            //    {
+            //        Directory.CreateDirectory("Z:\\UpLoad");
+            //    }
+            //}
+            //else
+            //{
+            //    System.IO.File.AppendAllText("d:\\nfs.log", "添加网络驱动器错误，错误号：" + state.ToString() + "\r\n");
+            //} 
+            #endregion
+
+            //var a = 2 << 3;
+
+            //Console.WriteLine(a);
+
+            //for (int i = 0; i < 1; ++i)
+            //{
+            //    Console.WriteLine(i);
+            //}
+            //信鸽通信
+            //Console.WriteLine(XingeApp.XingeApp.pushTokenAndroid(2100240957, "f255184d160bad51b88c31627bbd9530", "title", "android来自C# SDK的单个设备推测试消息", "76501cd0277cdcef4d8499784a819d4772e0fdde"));
+
+            #region 系统蜂鸣音
+            //if (Beep(3000, 5000))
+            //{
+            //    Console.WriteLine("成功");
+            //}
+            //else
+            //{
+            //    Console.WriteLine("失败");
+            //}
+            //var a= APIs.MessageBeep(0x00000040);
+
+            //Interaction.Beep();
+            //APIs.PlaySound(@"D:\Users\admin\AppData\Roaming\baidu\BaiduNetdisk\sounds\4.wav", 0, 1); //把1替换成9，可连续播放   
+            #endregion
+            
 
 
             Console.WriteLine("ok");
             Console.ReadKey();
         }
         
+
+        public static bool Beep(int iFrequency, int iDuration)
+        {
+            return APIs.Beep(iFrequency, iDuration);
+        }
+
+        public class APIs
+        {
+            [DllImport("Kernel32.dll")]
+            public static extern bool Beep(int frequency, int duration);
+
+            [DllImport("user32.dll")]
+            public static extern int MessageBeep(uint uType);
+            //发出不同类型的声音的参数如下：  
+            //Ok = 0x00000000,  
+            //Error = 0x00000010,  
+            //Question = 0x00000020,  
+            //Warning = 0x00000030,  
+            //Information = 0x00000040  
+
+            [DllImport("winmm.dll")]
+            public static extern bool PlaySound(String Filename, int Mod, int Flags);
+        }
+
 
         /// <summary>
         /// 设置单元格样式

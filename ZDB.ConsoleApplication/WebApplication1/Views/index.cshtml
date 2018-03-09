@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+@*<script src="../Scripts/jquery-1.8.2.js"></script>*@
+<script src="~/Scripts/jquery-1.10.2.js"></script>
+<input type="text" id="txtName" />
+<input type="button" value="加入聊天室" id="btnConnection" />
+<input type="button" value="离开聊天室" id="btnDisConnection" />
+<input type="text" id="txtInput" />
+<input type="button" value="发送" id="btnSend" />
+<div id="msg"></div>
+<script language="javascript" type="text/javascript">
+    var ws;
+    var url = "ws://192.168.1.122:1010"
+    $("#btnConnection").click(function () {
+        if ("WebSocket" in window) {
+            ws = new WebSocket(url);
+        }
+        else if ("MozWebSocket" in window) {
+            ws = new MozWebSocket(url);
+        }
+        else
+            alert("浏览器版本过低，请升级您的浏览器");
+        //注册各类回调
+        ws.onopen = function () {
+            $("#msg").append($("#txtName").val() + "加入聊天室<br />");
+        }
+        ws.onclose = function () {
+            $("#msg").append($("#txtName").val() + "离开聊天室<br />");
+        }
+        ws.onerror = function () {
+            $("#msg").append("数据传输发生错误<br />");
+        }
+        ws.onmessage = function (receiveMsg) {
+            $("#msg").append(receiveMsg.data + "<br />");
+        }
+        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = function () {
+            ws.close();
+        }
+    });
+    //$("#btnDisConnection").click(function () {
+    //    $("#msg").append($("#txtName").val() + "离开聊天室<br />");
+    //    ws.close();
+    //});
+    $("#btnSend").click(function () {
+        if (ws.readyState == WebSocket.OPEN) {
+            var message = "{\"name\":\"" + $("#txtName").val() + "\",\"message\":\"" + $("#txtInput").val() + "\"}";
+            ws.send(message);
+        }
+        else {
+            $("#msg").text("Connection is Closed!");
+        }
+    });
+</script>
